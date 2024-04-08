@@ -1,0 +1,155 @@
+body {
+    font-size: 100%;
+    margin: 0;
+    background-color: #1b243f;
+}
+
+.hero-image {
+    background: url(images/hero-image.jpg) no-repeat center; 
+    background-size: cover;
+    height: 400px;
+    position: relative;
+}
+
+#topnav {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #001d6d;
+    position: -webkit-sticky; /** For Safari **/
+    position: sticky;
+    top: 0;
+    width: 100%;
+}
+
+#topnav a {
+    float: left;
+    border-right:1px solid #bbb;
+    border-left: 1px solid #bbb;
+}
+
+#topnav a {
+    display: block;
+    color: rgb(230, 230, 230);
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+#topnav a:hover:not(.active) {
+    background-color: #36b3c9;
+}
+
+#topnav a.active {
+    background-color: #227180;
+    color: rgb(230, 230, 230);
+}
+
+#nav li:last-child {
+    border-right: none;
+  }
+
+.topnav-centered a {
+    float: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.topnav-right {
+    float: right;
+} 
+
+/* Responsive navigation menu (for mobile devices) */
+@media screen and (max-width: 600px) {
+    .topnav a, .topnav-right {
+      float: none;
+      display: block;
+    }
+    
+    .topnav-centered a {
+      position: relative;
+      top: 0;
+      left: 0;
+      transform: none;
+    }
+}
+
+/* Three unequal columns that floats next to each other */
+.column {
+    float: left;
+    padding: 10px;
+  }
+  
+/* Left and right column */
+.column.side {
+    width: 20%;
+  }
+  
+/* Middle column */
+.column.middle {
+    padding: 20px;
+    width: 60%;
+    text-align:center;
+    color: white;
+  }
+  
+/* Clear floats after the columns */
+.row::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+label {
+    font-size: 1.5em;
+}
+
+input[type=text] {
+    padding: 12px 20px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    border: 2px solid black;
+    border-radius: 4px;
+    outline: none;
+}
+
+input[type=text]:focus {
+    background-color: rgb(110, 134, 143);
+}
+
+input[type=submit] {
+    padding: 12px 20px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    border: 2px solid black;
+    border-radius: 4px;
+}
+
+.single_profile_stats table, th, td {
+    border-spacing: 0;
+    border-radius: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+    padding: 10px;
+}
+
+.single_profile_stats td {
+    border: 1px solid black;
+}
+
+footer {
+    padding: 10px;
+    text-align: center;
+    color: white;
+}
+  
+  /* Makes the three columns stack on top of each other instead of next to each other */
+  @media screen and (max-width: 600px) {
+    .column.side, .column.middle {
+      width: 100%;
+    }
+}
