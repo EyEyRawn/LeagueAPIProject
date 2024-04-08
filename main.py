@@ -1,3 +1,5 @@
+from urllib.parse import urlencode
+
 API_KEY = "RGAPI-92535861-2693-4b2c-ac04-cf11c5d1b74d"
 DEFAULT_REGION = 'americas'
 DEFAULT_TAG_LINE = 'NA1'
