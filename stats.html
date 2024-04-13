@@ -94,6 +94,23 @@
             const queryString = new URLSearchParams(queryParams).toString();
             const fullUrl = `${apiURL}?${queryString}`;
 
+            try{
+                const response = await fetch(fullUrl);
+
+                if(!response.ok){
+                    throw new Error('Could not fetch puuid');
+                }
+
+                const data = await response.json();
+                puuid = data.puuid;
+                console.log(puuid);
+                return puuid;
+            }
+            catch(error){
+                console.error(error);
+            }    
+        }
+
         async function fetchMatchByPuuid(puuid){
             const apiURL = `https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids`
             const queryParams = {
