@@ -95,7 +95,9 @@
             const fullUrl = `${apiURL}?${queryString}`;
 
             try{
-                const response = await fetch(fullUrl);
+                const response = await fetch(fullUrl, {
+                    mode: 'cors',
+                 });
 
                 if(!response.ok){
                     throw new Error('Could not fetch puuid');
