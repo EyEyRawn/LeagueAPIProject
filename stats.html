@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="css/mystyle.css">
+<title>League of Stats | Profile</title>
+<link rel="icon" type="image" href="css/images/favicon.jpg">
+</head>
+<body>
+
+<div class="hero-image">
+</div>
+
+
+<!--
+<div id="header">
+    <h1>Check out your stats!</h1>
+</div>
+-->
+        
+<div id="topnav">
+
+    <!-- Centered link -->
+    <div class="topnav-centered"> 
+        <a href="index.html">Home</a>
+    </div>
+
+    <!-- Left-aligned links (default) -->
+        <a href="stats.html" class="active">Profile</a>
+        <a href="#contact">Versus</a>
+
+    <!-- Right-aligned links -->
+    <div class="topnav-right">
+        <a href="#search">FAQ</a>
+        <a href="#about">Legal</a>
+    </div>
+
+</div>
+        
+<div class="row">
+
+    <!-- Left column -->  
+    <div class="column side">      
+    </div>
+    
+    <!-- Middle column -->
+    <div class="column middle">
+        <section>
+            <div class="single_profile_stats">
+                <table>
+                    <tr>
+                        <th colspan="2">Profile Name: <span id="profile-ID"></span></th>
+                    <tr>
+                        <td>Win Rate: <span id='win-rate'></span></td>
+                    </tr>
+                    <tr>
+                        <td>Rank:</td>
+                    </tr>
+                    <tr>
+                        <td>Average Kills:</td>
+                    </tr>
+                    <tr>
+                        <td>Average Deaths:</td>
+                    </tr>
+                    <tr>
+                        <td>Average Assits:</td>
+                    </tr>
+                    <tr>
+                        <td>Average Wards:</td>
+                    </tr>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <script>
+
+        const API_KEY = 'RGAPI-a2b36dd5-9abf-44ed-9c63-c3df3a9657a5';
+        const profileIDValue = sessionStorage.getItem('profile-ID');
+        const gameName = sessionStorage.getItem('game-Name');
+        const tagLine = sessionStorage.getItem('tag-Line');
+
+        console.log(gameName);
+        console.log(tagLine);
+        fetchPuuid(gameName, tagLine);
+
+        async function fetchPuuid(gameName, tagLine){
+
+            const apiURL = `https://americas.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${gameName}/${tagLine}`;
+            const queryParams = {
+                api_key: API_KEY
+            };
+            const queryString = new URLSearchParams(queryParams).toString();
+            const fullUrl = `${apiURL}?${queryString}`;
+
+            try{
+                const response = await fetch(fullUrl);
+
+                if(!response.ok){
+                    throw new Error('Could not fetch puuid');
+                }
+
+                const data = await response.json();
+                puuid = data.puuid;
+                console.log(puuid);
+                return puuid;
+            }
+            catch(error){
+                console.error(error);
+            }    
+        }
+
+        async function fetchMatchByPuuid(puuid){
+            const apiURL = `https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids`
+            const queryParams = {
+                api_key: API_KEY
+            };
+            const queryString = new URLSearchParams(queryParams).toString();
+            const fullUrl = `${apiURL}?${queryString}`;
+
+            try{
+                const response = await fetch(fullUrl);
+                if (!response.ok){
+                    throw new Error('Could not fetch Match IDs');
+                }
+
+                const data = await response.json();
+                return data;
+            }
+            catch(error){
+                console.error(error);
+            }
+        }
+
+        async function fetchPlayerWinOrLoss(match_id){
+            const puuid = await fetchPuuid(gameName, tagLine);
+            const apiURL = `https://americas.api.riotgames.com/lol/match/v5/matches/${match_id}`
+            const queryParams = {
+                api_key: API_KEY
+            };
+            const queryString = new URLSearchParams(queryParams).toString();
+            const fullUrl = `${apiURL}?${queryString}`;
+
+            try{
+                const response = await fetch(fullUrl);
+                if (!response.ok) {
+                    throw new Error('Could not fetch Match IDs');
+                }
+                const data = await response.json();
+                let participantMetadata = data.metadata.participants;
+                let playerIndex = participantMetadata.indexOf(puuid);
+                let playerMatchInfo = data.info.participants[playerIndex];
+                
+                return playerMatchInfo.win;
+            }
+            catch(error){
+                console.error(error);
+            }
+        }
+
+        // fetchPuuid(gameName, tagLine).then(winPercentOfLast20Games);
+
+        async function winPercentOfLast20Games(puuid){
+            let matches = await fetchMatchByPuuid(puuid);
+            let wins = 0;
+
+            for (let i = 0; i < matches.length; i++) {
+            
+                if (await fetchPlayerWinOrLoss(matches[i]) == true) {
+                    wins += 1;
+                }
+                
+            }
+
+            winRate = (wins/matches.length)*100;
+            return winRate;
+        }
+
+        document.getElementById('profile-ID').textContent = profileIDValue;
+
+    </script>
+
+    <!-- Right column -->      
+    <div class="column side">
+
+    </div>
+</div>
+
+<footer>
+    <p><i>This website isn't endorsed by Riot Games and doesn't reflect the views or opinions 
+        of Riot Games or anyone officially involved in producing or managing Riot Games 
+        properties. Riot Games, and all associated properties are trademarks or registered 
+        trademarks of Riot Games, Inc.</i></p>
+    <p>Author: Aaron Saunders<br>
+    <a href="mailto:asaunders011@wilmu.edu">asaunders011@my.wilmu.edu</a></p>
+</footer>
+
+</body>
+</html>
