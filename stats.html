@@ -75,11 +75,18 @@
     </div>
 
     <script>
-
+        
         const API_KEY = 'RGAPI-a2b36dd5-9abf-44ed-9c63-c3df3a9657a5';
         const profileIDValue = sessionStorage.getItem('profile-ID');
         const gameName = sessionStorage.getItem('game-Name');
         const tagLine = sessionStorage.getItem('tag-Line');
+
+        app.use((req, res, next) => {
+            res.header('Access-Control-Allow-Origin', 'https://eyeyrawn.github.io/FinalProject');
+            res.header('Access-Control-Allow-Methods', 'GET');
+            res.header('Access-Control-Allow-Credentials', true);
+        next();
+        });
 
         console.log(gameName);
         console.log(tagLine);
