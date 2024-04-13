@@ -84,13 +84,6 @@
         const gameName = sessionStorage.getItem('game-Name');
         const tagLine = sessionStorage.getItem('tag-Line');
 
-        app.use((req, res, next) => {
-            res.header('Access-Control-Allow-Origin', 'eyeyrawn.github.io/FinalProject/');
-            res.header('Access-Control-Allow-Methods', 'GET');
-            res.header('Access-Control-Allow-Credentials', true);
-        next();
-        });
-
         console.log(gameName);
         console.log(tagLine);
         fetchPuuid(gameName, tagLine);
@@ -103,25 +96,6 @@
             };
             const queryString = new URLSearchParams(queryParams).toString();
             const fullUrl = `${apiURL}?${queryString}`;
-
-            try{
-                const response = await fetch(fullUrl, {
-                    mode: 'cors',
-                 });
-
-                if(!response.ok){
-                    throw new Error('Could not fetch puuid');
-                }
-
-                const data = await response.json();
-                puuid = data.puuid;
-                console.log(puuid);
-                return puuid;
-            }
-            catch(error){
-                console.error(error);
-            }    
-        }
 
         async function fetchMatchByPuuid(puuid){
             const apiURL = `https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids`
