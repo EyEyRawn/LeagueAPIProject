@@ -55,19 +55,16 @@
                         <td>Win Rate: <span id='win-rate'></span></td>
                     </tr>
                     <tr>
-                        <td>Rank:</td>
+                        <td>Average Kills: <span id='average-kills'></span></td>
                     </tr>
                     <tr>
-                        <td>Average Kills:</td>
+                        <td>Average Deaths: <span id='average-deaths'></span></td>
                     </tr>
                     <tr>
-                        <td>Average Deaths:</td>
+                        <td>Average Assists: <span id='average-assists'></span></td>
                     </tr>
                     <tr>
-                        <td>Average Assits:</td>
-                    </tr>
-                    <tr>
-                        <td>Average Wards:</td>
+                        <td>Average Wards: <span id='average-wards'></span></td>
                     </tr>
                 </table>
             </div>
@@ -75,15 +72,14 @@
     </div>
 
     <script>
-        
-        const API_KEY = 'RGAPI-a2b36dd5-9abf-44ed-9c63-c3df3a9657a5';
-        const profileIDValue = sessionStorage.getItem('profile-ID');
-        const gameName = sessionStorage.getItem('game-Name');
-        const tagLine = sessionStorage.getItem('tag-Line');
 
-        console.log(gameName);
-        console.log(tagLine);
-        fetchPuuid(gameName, tagLine);
+        const API_KEY = 'RGAPI-bea5edb0-262a-49a0-b784-c9b349cfab6d';
+        const profileIDValue = sessionStorage.getItem('profile-ID');
+        let gameName = sessionStorage.getItem('game-Name');
+        let tagLine = sessionStorage.getItem('tag-Line');
+        const cachedPuuid = {};
+
+        fetchPuuid(gameName, tagLine).then(averageStatsOfLast20Games);
 
         async function fetchPuuid(gameName, tagLine){
 
@@ -94,21 +90,25 @@
             const queryString = new URLSearchParams(queryParams).toString();
             const fullUrl = `${apiURL}?${queryString}`;
 
-            try{
-                const response = await fetch(fullUrl);
+            if (cachedPuuid.puuid) {
+                return cachedPuuid.puuid;
+            } else {
+                try{
+                    const response = await fetch(fullUrl);
 
-                if(!response.ok){
-                    throw new Error('Could not fetch puuid');
+                    if(!response.ok){
+                        throw new Error('Could not fetch puuid');
+                    }
+
+                    const data = await response.json();
+                    cachedPuuid.puuid = data.puuid;
+                    return data.puuid;
                 }
-
-                const data = await response.json();
-                puuid = data.puuid;
-                console.log(puuid);
-                return puuid;
+                catch(error){
+                    console.error(error);
+                    throw error;
+                }    
             }
-            catch(error){
-                console.error(error);
-            }    
         }
 
         async function fetchMatchByPuuid(puuid){
@@ -120,10 +120,7 @@
             const fullUrl = `${apiURL}?${queryString}`;
 
             try{
-                const response = await fetch(fullUrl, { 
-                    method: 'GET', 
-                    mode: 'cors',
-                });
+                const response = await fetch(fullUrl);
                 if (!response.ok){
                     throw new Error('Could not fetch Match IDs');
                 }
@@ -136,7 +133,7 @@
             }
         }
 
-        async function fetchPlayerWinOrLoss(match_id){
+        async function fetchPlayerStats(match_id){
             const puuid = await fetchPuuid(gameName, tagLine);
             const apiURL = `https://americas.api.riotgames.com/lol/match/v5/matches/${match_id}`
             const queryParams = {
@@ -154,30 +151,62 @@
                 let participantMetadata = data.metadata.participants;
                 let playerIndex = participantMetadata.indexOf(puuid);
                 let playerMatchInfo = data.info.participants[playerIndex];
+                let playerWin = playerMatchInfo.win;
+                let playerKills = playerMatchInfo.kills;
+                let playerDeaths = playerMatchInfo.deaths;
+                let playerAssists = playerMatchInfo.assists;
+                let playerWards = playerMatchInfo.wardsPlaced;
+                let playerStats = {playerWin, playerKills, playerDeaths, playerAssists, playerWards};
                 
-                return playerMatchInfo.win;
+                return playerStats;
             }
             catch(error){
                 console.error(error);
             }
         }
 
-        // fetchPuuid(gameName, tagLine).then(winPercentOfLast20Games);
-
-        async function winPercentOfLast20Games(puuid){
+        async function averageStatsOfLast20Games(puuid){
             let matches = await fetchMatchByPuuid(puuid);
             let wins = 0;
+            let kills = 0;
+            let deaths = 0;
+            let assists = 0;
+            let wards = 0;
+            let winRate = 0;
+            let averageKills = 0;
+            let averageDeaths = 0;
+            let averageAssists = 0;
+            let averageWards = 0;
+            let averagePlayerStats = {};
 
             for (let i = 0; i < matches.length; i++) {
-            
-                if (await fetchPlayerWinOrLoss(matches[i]) == true) {
-                    wins += 1;
-                }
-                
-            }
 
-            winRate = (wins/matches.length)*100;
-            return winRate;
+                playerStats = await fetchPlayerStats(matches[i]);
+                    if ( playerStats.playerWin == true) {
+                        wins += 1;
+                    }
+                    kills += playerStats.playerKills;
+                    deaths += playerStats.playerDeaths;
+                    assists += playerStats.playerAssists;
+                    wards += playerStats.playerWards;
+                }
+
+                winRate = ((wins/matches.length)*100);
+                averageKills = (kills/matches.length);
+                averageDeaths = (deaths/matches.length);
+                averageAssists = (assists/matches.length);
+                averageWards = (wards/matches.length);
+
+                document.getElementById('win-rate').textContent = (winRate.toFixed(0))+'%';
+                document.getElementById('average-kills').textContent = (averageKills.toFixed(2));
+                document.getElementById('average-deaths').textContent = (averageDeaths.toFixed(2));
+                document.getElementById('average-assists').textContent = (averageAssists.toFixed(2));
+                document.getElementById('average-wards').textContent = (averageWards.toFixed(0));
+
+                averagePlayerStats = {winRate, averageKills, averageDeaths, averageAssists, averageWards};
+                console.log(averagePlayerStats);
+
+                return averagePlayerStats;
         }
 
         document.getElementById('profile-ID').textContent = profileIDValue;
