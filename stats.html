@@ -198,13 +198,12 @@
                 averageWards = (wards/matches.length);
 
                 document.getElementById('win-rate').textContent = (winRate.toFixed(0))+'%';
-                document.getElementById('average-kills').textContent = (averageKills.toFixed(2));
-                document.getElementById('average-deaths').textContent = (averageDeaths.toFixed(2));
-                document.getElementById('average-assists').textContent = (averageAssists.toFixed(2));
+                document.getElementById('average-kills').textContent = (averageKills.toFixed(1));
+                document.getElementById('average-deaths').textContent = (averageDeaths.toFixed(1));
+                document.getElementById('average-assists').textContent = (averageAssists.toFixed(1));
                 document.getElementById('average-wards').textContent = (averageWards.toFixed(0));
 
                 averagePlayerStats = {winRate, averageKills, averageDeaths, averageAssists, averageWards};
-                console.log(averagePlayerStats);
 
                 return averagePlayerStats;
         }
