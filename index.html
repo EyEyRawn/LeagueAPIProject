@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -29,7 +29,7 @@
 
     <!-- Left-aligned links (default) -->
         <a href="stats.html">Profile</a>
-        <a href="#contact">Versus</a>
+        <a href="versus.html">Versus</a>
 
     <!-- Right-aligned links -->
     <div class="topnav-right">
@@ -68,9 +68,9 @@
                     
                     const profileIDValue = profileID.value;
                     const profileIDArray = profileIDValue.split("#");
-                    const gameName = profileIDArray[0];
-                    const tagLine = profileIDArray[1];
-
+                    let gameName = profileIDArray[0];
+                    let tagLine = profileIDArray[1];  
+                    
                     sessionStorage.setItem('profile-ID', profileIDValue);
                     sessionStorage.setItem('game-Name', gameName);
                     sessionStorage.setItem('tag-Line', tagLine);
