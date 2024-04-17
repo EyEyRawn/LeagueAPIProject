@@ -1,3 +1,5 @@
+* { box-sizing: border-box;}
+
 body {
     font-size: 100%;
     margin: 0;
@@ -9,6 +11,15 @@ body {
     background-size: cover;
     height: 400px;
     position: relative;
+}
+
+a:link {
+    text-decoration: none;
+    color: rgb(170, 99, 236);
+}
+
+a:visited {
+    color: rgb(170, 99, 236);
 }
 
 #topnav {
@@ -95,6 +106,13 @@ body {
     text-align:center;
     color: white;
   }
+
+.column-halves {
+    float: left;
+    width: 50%;
+    padding: 10px;
+    color: white;
+}
   
 /* Clear floats after the columns */
 .row::after {
@@ -107,6 +125,10 @@ label {
     font-size: 1.5em;
 }
 
+.form {
+    text-align: center;
+}
+
 input[type=text] {
     padding: 12px 20px;
     margin: 8px 0;
@@ -117,7 +139,11 @@ input[type=text] {
 }
 
 input[type=text]:focus {
-    background-color: rgb(110, 134, 143);
+    background-color: rgb(153, 219, 243);
+}
+
+input[type=text]:focus::placeholder {
+    color: transparent;
 }
 
 input[type=submit] {
@@ -126,9 +152,20 @@ input[type=submit] {
     box-sizing: border-box;
     border: 2px solid black;
     border-radius: 4px;
+    transition-duration: 0.4s;
 }
 
-.single_profile_stats table, th, td {
+input[type=submit]:hover {
+    background-color: #85cfec;
+}
+
+input[type=submit]:active {
+    background-color: #3b5efd;
+    box-shadow: 0 5px #666;
+    transform: translateY(4px);
+}
+
+.profile_stats table, th, td {
     border-spacing: 0;
     border-radius: 10px;
     margin-left: auto;
@@ -137,7 +174,7 @@ input[type=submit] {
     padding: 10px;
 }
 
-.single_profile_stats td {
+.profile_stats td {
     border: 1px solid black;
 }
 
