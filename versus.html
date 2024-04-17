@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="css/mystyle.css">
+<title>League of Stats | Profile</title>
+<link rel="icon" type="image" href="css/images/favicon.ico">
+</head>
+<body>
+
+<div class="hero-image">
+</div>
+        
+<div id="topnav">
+
+    <!-- Centered link -->
+    <div class="topnav-centered"> 
+        <a href="index.html">Home</a>
+    </div>
+
+    <!-- Left-aligned links (default) -->
+        <a href="stats.html">Profile</a>
+        <a href="versus.html" class="active">Versus</a>
+
+    <!-- Right-aligned links -->
+    <div class="topnav-right">
+        <a href="#search">FAQ</a>
+        <a href="#about">Legal</a>
+    </div>
+
+</div>
+        
+<div class="row">
+    
+    <!-- Left column -->
+    <div class="column-halves">
+        <section>
+            <div class="profile_stats">
+                <table>
+                    <div class="form">
+                        <form id="form">
+                            <label for="profileID">Profile 1: </label>
+                            <input type="text" id="profileID" name="profileID" value="" placeholder="Randomdude#NA1">
+                            <input type="submit" value="Update">
+                        </form>
+                    </div>
+                    <tr>
+                        <th colspan="2">Profile Name: <span id="profile-ID"></span></th>
+                    <tr>
+                        <td>Win Rate: <span id='win-rate'></span></td>
+                    </tr>
+                    <tr>
+                        <td>Average Kills: <span id='average-kills'></span></td>
+                    </tr>
+                    <tr>
+                        <td>Average Deaths: <span id='average-deaths'></span></td>
+                    </tr>
+                    <tr>
+                        <td>Average Assists: <span id='average-assists'></span></td>
+                    </tr>
+                    <tr>
+                        <td>Average Wards: <span id='average-wards'></span></td>
+                    </tr>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <!-- Right column -->      
+    <div class="column-halves">
+        <div class="profile_stats">
+            <table>
+                <div class="form">
+                    <form id="player2Form">
+                        <label for="player2ProfileID">Profile 2: </label>
+                        <input type="text" id="player2ProfileID" name="player2ProfileID" value="" placeholder="MENSWXVR#NA1">
+                        <input type="submit" value="Update">
+                    </form>
+                </div>
+                <tr>
+                    <th colspan="2">Profile Name: <span id="player2-profile-ID"></span></th>
+                <tr>
+                    <td>Win Rate: <span id='player2-win-rate'></span></td>
+                </tr>
+                <tr>
+                    <td>Average Kills: <span id='player2-average-kills'></span></td>
+                </tr>
+                <tr>
+                    <td>Average Deaths: <span id='player2-average-deaths'></span></td>
+                </tr>
+                <tr>
+                    <td>Average Assists: <span id='player2-average-assists'></span></td>
+                </tr>
+                <tr>
+                    <td>Average Wards: <span id='player2-average-wards'></span></td>
+                </tr>
+            </table>
+        </div>
+    </section>
+</div>
+
+    </div>
+
+    <script>
+
+        const API_KEY = 'RGAPI-bea5edb0-262a-49a0-b784-c9b349cfab6d';
+        let profileID = document.getElementById('profileID');
+        let gameName = sessionStorage.getItem('game-Name');
+        let tagLine = sessionStorage.getItem('tag-Line');
+        let player2ProfileID = document.getElementById('player2ProfileID');
+        let player2GameName = sessionStorage.getItem('player2-game-Name');
+        let player2TagLine = sessionStorage.getItem('player2-tag-Line');
+        var cachedPuuid = {};
+        var player2CachedPuuid = {};
+
+        async function fetchPuuid(gameName, tagLine){
+
+            const apiURL = `https://americas.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${gameName}/${tagLine}`;
+            const queryParams = {
+                api_key: API_KEY
+            };
+            const queryString = new URLSearchParams(queryParams).toString();
+            const fullUrl = `${apiURL}?${queryString}`;
+
+            if (cachedPuuid.puuid) {
+                return cachedPuuid.puuid;
+            } else {
+                try{
+                    const response = await fetch(fullUrl);
+
+                    if(!response.ok){
+                        throw new Error('Could not fetch puuid');
+                    }
+
+                    const data = await response.json();
+                    cachedPuuid.puuid = data.puuid;
+                    return data.puuid;
+                }
+                catch(error){
+                    console.error(error);
+                    throw error;
+                }    
+            }
+        }
+
+        async function player2FetchPuuid(player2GameName, player2TagLine){
+
+            const apiURL = `https://americas.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${player2GameName}/${player2TagLine}`;
+            const queryParams = {
+                api_key: API_KEY
+            };
+            const queryString = new URLSearchParams(queryParams).toString();
+            const fullUrl = `${apiURL}?${queryString}`;
+
+            if (player2CachedPuuid.puuid) {
+                return player2CachedPuuid.puuid;
+            } else {
+                try{
+                    const response = await fetch(fullUrl);
+
+                    if(!response.ok){
+                        throw new Error('Could not fetch puuid');
+                    }
+
+                    const data = await response.json();
+                    player2CachedPuuid.puuid = data.puuid;
+                    return data.puuid;
+                }
+                catch(error){
+                    console.error(error);
+                    throw error;
+                }    
+            }
+        }
+
+        async function fetchMatchByPuuid(puuid){
+            const apiURL = `https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids`
+            const queryParams = {
+                api_key: API_KEY
+            };
+            const queryString = new URLSearchParams(queryParams).toString();
+            const fullUrl = `${apiURL}?${queryString}`;
+
+            try{
+                const response = await fetch(fullUrl);
+                if (!response.ok){
+                    throw new Error('Could not fetch Match IDs');
+                }
+
+                const data = await response.json();
+                console.log(puuid);
+                return data;
+            }
+            catch(error){
+                console.error(error);
+            }
+        }
+
+        async function fetchPlayerStats(match_id){
+            const puuid = await fetchPuuid(gameName, tagLine);
+            const apiURL = `https://americas.api.riotgames.com/lol/match/v5/matches/${match_id}`
+            const queryParams = {
+                api_key: API_KEY
+            };
+            const queryString = new URLSearchParams(queryParams).toString();
+            const fullUrl = `${apiURL}?${queryString}`;
+
+            try{
+                const response = await fetch(fullUrl);
+                if (!response.ok) {
+                    throw new Error('Could not fetch Match IDs');
+                }
+                const data = await response.json();
+                let participantMetadata = data.metadata.participants;
+                let playerIndex = participantMetadata.indexOf(puuid);
+                let playerMatchInfo = data.info.participants[playerIndex];
+                let playerWin = playerMatchInfo.win;
+                let playerKills = playerMatchInfo.kills;
+                let playerDeaths = playerMatchInfo.deaths;
+                let playerAssists = playerMatchInfo.assists;
+                let playerWards = playerMatchInfo.wardsPlaced;
+                let playerStats = {playerWin, playerKills, playerDeaths, playerAssists, playerWards};
+                
+                return playerStats;
+            }
+            catch(error){
+                console.error(error);
+            }
+        }
+
+        async function player2FetchPlayerStats(match_id){
+            const puuid = await player2FetchPuuid(gameName, tagLine);
+            const apiURL = `https://americas.api.riotgames.com/lol/match/v5/matches/${match_id}`
+            const queryParams = {
+                api_key: API_KEY
+            };
+            const queryString = new URLSearchParams(queryParams).toString();
+            const fullUrl = `${apiURL}?${queryString}`;
+
+            try{
+                const response = await fetch(fullUrl);
+                if (!response.ok) {
+                    throw new Error('Could not fetch Match IDs');
+                }
+                const data = await response.json();
+                let participantMetadata = data.metadata.participants;
+                let playerIndex = participantMetadata.indexOf(puuid);
+                let playerMatchInfo = data.info.participants[playerIndex];
+                let playerWin = playerMatchInfo.win;
+                let playerKills = playerMatchInfo.kills;
+                let playerDeaths = playerMatchInfo.deaths;
+                let playerAssists = playerMatchInfo.assists;
+                let playerWards = playerMatchInfo.wardsPlaced;
+                let playerStats = {playerWin, playerKills, playerDeaths, playerAssists, playerWards};
+                
+                return playerStats;
+            }
+            catch(error){
+                console.error(error);
+            }
+        }
+
+        //fetchPuuid(gameName, tagLine).then(averageStatsOfLast20Games);
+
+        async function averageStatsOfLast20Games(puuid){
+            const matches = await fetchMatchByPuuid(puuid);
+            let wins = 0;
+            let kills = 0;
+            let deaths = 0;
+            let assists = 0;
+            let wards = 0;
+            let winRate = 0;
+            let averageKills = 0;
+            let averageDeaths = 0;
+            let averageAssists = 0;
+            let averageWards = 0;
+            let averagePlayerStats = {};
+
+            for (let i = 0; i < matches.length; i++) {
+
+                playerStats = await fetchPlayerStats(matches[i]);
+                    if ( playerStats.playerWin == true) {
+                        wins += 1;
+                    }
+                    kills += playerStats.playerKills;
+                    deaths += playerStats.playerDeaths;
+                    assists += playerStats.playerAssists;
+                    wards += playerStats.playerWards;
+                }
+
+                winRate = ((wins/matches.length)*100);
+                averageKills = (kills/matches.length);
+                averageDeaths = (deaths/matches.length);
+                averageAssists = (assists/matches.length);
+                averageWards = (wards/matches.length);
+
+                document.getElementById('win-rate').textContent = (winRate.toFixed(0))+'%';
+                document.getElementById('average-kills').textContent = (averageKills.toFixed(1));
+                document.getElementById('average-deaths').textContent = (averageDeaths.toFixed(1));
+                document.getElementById('average-assists').textContent = (averageAssists.toFixed(1));
+                document.getElementById('average-wards').textContent = (averageWards.toFixed(0));
+
+                averagePlayerStats = {winRate, averageKills, averageDeaths, averageAssists, averageWards};
+                console.log(averagePlayerStats);
+
+                return averagePlayerStats;
+        }
+
+        async function player2AverageStatsOfLast20Games(puuid){
+            const matches = await fetchMatchByPuuid(puuid);
+            let wins = 0;
+            let kills = 0;
+            let deaths = 0;
+            let assists = 0;
+            let wards = 0;
+            let winRate = 0;
+            let averageKills = 0;
+            let averageDeaths = 0;
+            let averageAssists = 0;
+            let averageWards = 0;
+            let averagePlayerStats = {};
+
+            for (let i = 0; i < matches.length; i++) {
+
+                playerStats = await player2FetchPlayerStats(matches[i]);
+                    if ( playerStats.playerWin == true) {
+                        wins += 1;
+                    }
+                    kills += playerStats.playerKills;
+                    deaths += playerStats.playerDeaths;
+                    assists += playerStats.playerAssists;
+                    wards += playerStats.playerWards;
+                }
+
+                winRate = ((wins/matches.length)*100);
+                averageKills = (kills/matches.length);
+                averageDeaths = (deaths/matches.length);
+                averageAssists = (assists/matches.length);
+                averageWards = (wards/matches.length);
+
+                document.getElementById('player2-win-rate').textContent = (winRate.toFixed(0))+'%';
+                document.getElementById('player2-average-kills').textContent = (averageKills.toFixed(1));
+                document.getElementById('player2-average-deaths').textContent = (averageDeaths.toFixed(1));
+                document.getElementById('player2-average-assists').textContent = (averageAssists.toFixed(1));
+                document.getElementById('player2-average-wards').textContent = (averageWards.toFixed(0));
+
+                averagePlayerStats = {winRate, averageKills, averageDeaths, averageAssists, averageWards};
+                console.log(averagePlayerStats);
+
+                return averagePlayerStats;
+        }
+
+        document.getElementById('form').addEventListener('submit', function(e){
+            e.preventDefault();
+
+            const profileIDValue = profileID.value;
+            const profileIDArray = profileIDValue.split("#");
+            const gameName = profileIDArray[0];
+            const tagLine = profileIDArray[1];
+
+
+            sessionStorage.setItem('profile-ID', profileIDValue);
+            document.getElementById('profile-ID').textContent = sessionStorage.getItem('profile-ID');
+            sessionStorage.setItem('game-Name', gameName);
+            sessionStorage.setItem('tag-Line', tagLine);
+            cachedPuuid = {};
+
+            fetchPuuid(gameName, tagLine).then(averageStatsOfLast20Games);
+        })
+
+        document.getElementById('player2Form').addEventListener('submit', function(e){
+            e.preventDefault();
+
+            const player2ProfileIDValue = player2ProfileID.value;
+            const player2ProfileIDArray = player2ProfileIDValue.split("#");
+            const player2GameName = player2ProfileIDArray[0];
+            const player2TagLine = player2ProfileIDArray[1];
+
+            sessionStorage.setItem('player2-profile-ID', player2ProfileIDValue);
+            document.getElementById('player2-profile-ID').textContent = sessionStorage.getItem('player2-profile-ID');
+            sessionStorage.setItem('player2-game-Name', player2GameName);
+            sessionStorage.setItem('player2-tag-Line', player2TagLine);
+            player2CachedPuuid = {};
+
+            player2FetchPuuid(player2GameName, player2TagLine).then(player2AverageStatsOfLast20Games);
+        })
+
+    </script>
+</div>
+
+<footer>
+    <p><i>This website isn't endorsed by Riot Games and doesn't reflect the views or opinions 
+        of Riot Games or anyone officially involved in producing or managing Riot Games 
+        properties. Riot Games, and all associated properties are trademarks or registered 
+        trademarks of Riot Games, Inc.</i></p>
+    <p>Author: Aaron Saunders<br>
+    <a href="mailto:asaunders011@wilmu.edu">asaunders011@my.wilmu.edu</a></p>
+</footer>
+
+</body>
+</html>
