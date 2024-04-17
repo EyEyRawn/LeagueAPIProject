@@ -225,6 +225,7 @@
             sessionStorage.setItem('game-Name', gameName);
             sessionStorage.setItem('tag-Line', tagLine);
             cachedPuuid = {};
+            document.getElementById('profile-ID').textContent = sessionStorage.getItem('profile-ID');
 
             fetchPuuid(gameName, tagLine).then(averageStatsOfLast20Games);
         })
