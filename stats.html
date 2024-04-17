@@ -11,13 +11,6 @@
 
 <div class="hero-image">
 </div>
-
-
-<!--
-<div id="header">
-    <h1>Check out your stats!</h1>
-</div>
--->
         
 <div id="topnav">
 
@@ -28,7 +21,7 @@
 
     <!-- Left-aligned links (default) -->
         <a href="stats.html" class="active">Profile</a>
-        <a href="#contact">Versus</a>
+        <a href="versus.html">Versus</a>
 
     <!-- Right-aligned links -->
     <div class="topnav-right">
@@ -47,8 +40,14 @@
     <!-- Middle column -->
     <div class="column middle">
         <section>
-            <div class="single_profile_stats">
+            <div class="profile_stats">
                 <table>
+                    <h3>Want to see another profile?</h3>
+                    <form id="form">
+                        <label for="profileID">Summoner Name: </label>
+                        <input type="text" id="profileID" name="profileID" value="" placeholder="Randomdude#NA1">
+                        <input type="submit" value="Update">
+                    </form>
                     <tr>
                         <th colspan="2">Profile Name: <span id="profile-ID"></span></th>
                     <tr>
@@ -68,16 +67,18 @@
                     </tr>
                 </table>
             </div>
+
+            <h3>Want to go head to head? Try <a href=versus.html>versus</a>!</h3>
         </section>
     </div>
 
     <script>
 
         const API_KEY = 'RGAPI-bea5edb0-262a-49a0-b784-c9b349cfab6d';
-        const profileIDValue = sessionStorage.getItem('profile-ID');
-        let gameName = sessionStorage.getItem('game-Name');
-        let tagLine = sessionStorage.getItem('tag-Line');
-        const cachedPuuid = {};
+        var profileIDValue = sessionStorage.getItem('profile-ID');
+        var gameName = sessionStorage.getItem('game-Name');
+        var tagLine = sessionStorage.getItem('tag-Line');
+        var cachedPuuid = {};
 
         fetchPuuid(gameName, tagLine).then(averageStatsOfLast20Games);
 
@@ -204,9 +205,29 @@
                 document.getElementById('average-wards').textContent = (averageWards.toFixed(0));
 
                 averagePlayerStats = {winRate, averageKills, averageDeaths, averageAssists, averageWards};
+                console.log(averagePlayerStats);
 
                 return averagePlayerStats;
         }
+
+        const form = document.getElementById('form');
+        const profileID = document.getElementById('profileID');
+
+        form.addEventListener('submit', function(e){
+            e.preventDefault();
+
+            const profileIDValue = profileID.value;
+            const profileIDArray = profileIDValue.split("#");
+            const gameName = profileIDArray[0];
+            const tagLine = profileIDArray[1];
+            
+            sessionStorage.setItem('profile-ID', profileIDValue);
+            sessionStorage.setItem('game-Name', gameName);
+            sessionStorage.setItem('tag-Line', tagLine);
+            cachedPuuid = {};
+
+            fetchPuuid(gameName, tagLine).then(averageStatsOfLast20Games);
+        })
 
         document.getElementById('profile-ID').textContent = profileIDValue;
 
