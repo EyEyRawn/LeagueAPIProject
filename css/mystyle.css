@@ -92,12 +92,12 @@ a:visited {
 .column {
     float: left;
     padding: 10px;
-  }
+}
   
 /* Left and right column */
 .column.side {
     width: 20%;
-  }
+ }
   
 /* Middle column */
 .column.middle {
@@ -105,7 +105,11 @@ a:visited {
     width: 60%;
     text-align:center;
     color: white;
-  }
+}
+
+#legal-policies, #faq-questions {
+    text-align: left;
+}
 
 .column-halves {
     float: left;
