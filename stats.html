@@ -25,8 +25,8 @@
 
     <!-- Right-aligned links -->
     <div class="topnav-right">
-        <a href="#search">FAQ</a>
-        <a href="#about">Legal</a>
+        <a href="faq.html">FAQ</a>
+        <a href="legal.html">Legal</a>
     </div>
 
 </div>
@@ -74,7 +74,7 @@
 
     <script>
 
-        const API_KEY = 'RGAPI-9dc13aec-074d-49b7-bf46-2ab51a524b7e';
+        const API_KEY = 'RGAPI-0e123cb1-b9e6-4ce9-9e47-bcdf15148202';
         var profileIDValue = sessionStorage.getItem('profile-ID');
         var gameName = sessionStorage.getItem('game-Name');
         var tagLine = sessionStorage.getItem('tag-Line');
@@ -107,6 +107,7 @@
                 }
                 catch(error){
                     console.error(error);
+                    alert("Please enter a valid summoner name or wait two minutes before trying again.");
                     throw error;
                 }    
             }
@@ -130,6 +131,7 @@
                 return data;
             }
             catch(error){
+                alert("Too many updates, please wait two minutes before trying again.");
                 console.error(error);
             }
         }
@@ -162,6 +164,7 @@
                 return playerStats;
             }
             catch(error){
+                alert("Please enter a valid summoner name or wait two minutes before trying again.");
                 console.error(error);
             }
         }
